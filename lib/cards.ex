@@ -1,43 +1,53 @@
 defmodule Cards do
-  @spec create_deck :: list
+  @moduledoc """
+    Provides method for creating and dealing with cards.
+  """
+
+  @doc """
+    Create a new list of stringgs representing the cards.
+  """
   def create_deck do
     values = ["Ace", "Two", "Three", "Four", "Five"]
     suits = ["Spades", "Clubs", "Hearts", "Diamond"]
-    # tempCards =
-    #   for value <- values do
-    #     for suit <- suits do
-    #       "#{value} of #{suit}"
-    #     end
-    #   end
-    # List.flatten(tempCards)
 
     for suit <- suits, value <- values do
       "#{value} of #{suit}"
     end
   end
 
-  @spec shuffle(any) :: list
+  @doc """
+    Shuffle the cards in the deck.
+  """
   def shuffle(deck) do
     Enum.shuffle(deck)
   end
 
-  @spec contains(any, any) :: boolean
-  def contains(deck, card) do
+  @doc """
+    Check if the card is in the deck.
+
+    ## Examples
+      iex> deck = Cards.create_deck
+      iex> Cards.contains?(deck, "Two of Spades")
+      true
+  """
+  def contains?(deck, card) do
     Enum.member?(deck, card)
   end
 
+  @doc """
+    Divides the deck into two parts. The first is the cards dealt and the other is the remainder of the deck.
+    `hand_size` is the second parameter which takes a number supplied by the user. This represents the number of cards to deal.
+
+  ## Examples
+      iex> deck = Cards.create_deck
+      iex> {hand, _deck_data} = Cards.deal(deck, 2)
+      iex> hand
+      ["Ace of Spades", "Two of Spades"]
+  """
   def deal(deck, hand_size) do
     Enum.split(deck, hand_size)
   end
 
-  @spec save(
-          any,
-          binary
-          | maybe_improper_list(
-              binary | maybe_improper_list(any, binary | []) | char,
-              binary | []
-            )
-        ) :: :ok | {:error, atom}
   def save(deck, file_name) do
     binary = :erlang.term_to_binary(deck)
     File.write(file_name, binary)
@@ -48,5 +58,13 @@ defmodule Cards do
       {:ok, binary} -> :erlang.binary_to_term(binary)
       {:error, _reason} -> "That file does not exists"
     end
+  end
+
+  def create_and_deal(hand_size) do
+    create_deck() |> shuffle() |> deal(hand_size)
+  end
+
+  def hello() do
+    :world
   end
 end
